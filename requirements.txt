@@ -1,0 +1,10 @@
+uvicorn
+fastapi
+python-multipart
+FlagEmbedding
+torch
+fastapi_cdn_host
+ninja
+einops
+wheel
+flash_attn
