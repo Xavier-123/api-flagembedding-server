@@ -46,7 +46,7 @@ def rerank_infer(req: RerankRequestModel, rerank_model_dict=None):
         content = {
             "object": "list",
             "model": req.model,
-            "data": data,
+            "results": data,
             # "usage": {"total_tokens": None, "prompt_tokens": None}
             "meta": {
                 "api_version": None,
