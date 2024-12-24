@@ -12,10 +12,10 @@ def embed_infer(req: EmbeddingRequestModel, embed_model_dict, embed_tokenized_di
             return {"isSuc": False, "code": 0, "msg": f"model {req.model} is not exist", "res": {}}
 
         if "bge-m3" == req.model:
-            embeddings = model.encode(req.inputs)["dense_vecs"].tolist()
+            embeddings = model.encode(req.input)["dense_vecs"].tolist()
             logger.info(embeddings)
         else:
-            embeddings = model.encode(req.inputs).tolist()
+            embeddings = model.encode(req.input).tolist()
 
         data = []
         for idx, embedding in enumerate(embeddings):
@@ -23,8 +23,8 @@ def embed_infer(req: EmbeddingRequestModel, embed_model_dict, embed_tokenized_di
             embed["index"] = idx
             embed["object"] = "embedding"
             embed["embedding"] = embedding
-            embed["usage"] = {"prompt_tokens": len(tokenizer(req.inputs[idx])['input_ids']),
-                              "total_tokens": len(tokenizer(req.inputs[idx])['input_ids'])}
+            embed["usage"] = {"prompt_tokens": len(tokenizer(req.input[idx])['input_ids']),
+                              "total_tokens": len(tokenizer(req.input[idx])['input_ids'])}
             data.append(embed)
         content = {"object": "list", "model": req.model, "data": data}
         return content
