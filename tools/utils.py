@@ -1,4 +1,5 @@
 import os
+import gc
 import uuid
 import torch
 from typing import List
@@ -98,7 +99,7 @@ class DelRerankRequestModel(BaseModel):
 
 class EmbeddingRequestModel(BaseModel):
     model: str = Field("")
-    inputs: List = Field([""])
+    input: List = Field([""])
 
 
 class EmbeddingSimilarityRequestModel(BaseModel):
@@ -206,8 +207,34 @@ def del_model(model_name, model_dict=None, tokenizer_dict=None):
             return False
         del model_dict[model_name]
         del tokenizer_dict[model_name]
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
+        gc.collect()
+        empty_cache()
         return True
     except Exception as e:
         logger.info(f"error del model {model_name}, {str(e)}")
+        return False
+
+
+def empty_cache():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    if torch.backends.mps.is_available():
+        torch.mps.empty_cache()
+    if is_xpu_available():
+        torch.xpu.empty_cache()
+    if is_npu_available():
+        torch.npu.empty_cache()
+
+def is_xpu_available() -> bool:
+    return hasattr(torch, "xpu") and torch.xpu.is_available()
+
+
+def is_npu_available() -> bool:
+    try:
+        import torch
+        import torch_npu  # noqa: F401
+
+        return torch.npu.is_available()
+    except ImportError:
         return False
