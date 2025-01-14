@@ -36,13 +36,10 @@ devices = get_devices()
 # 初始化embedd
 embed_model_dict = {}
 embed_tokenizer_dict = {}
-# model_name_or_path = r'/u01/MODELS/Xorbits/bge-small-zh-v1.5'
-# model_name_or_path = r'/models/AI-ModelScope/m3e-large'
-model_name_or_path = os.environ.get("EMBEDDING_PATH", "")
+model_name_or_path = r'F:\inspur\EMBEDDING_MODEL\AI-ModelScope\bge-small-zh-v1.5'
+# model_name_or_path = os.environ.get("EMBEDDING_PATH", "")
 if model_name_or_path == "":
     logger.info("Please set the environment variable 'EMBEDDING_PATH'")
-# model_name_or_path = r'/u01/MODELS/Xorbits/bge-m3'
-# model_name_or_path = r'F:\inspur\EMBEDDING_MODEL\AI-ModelScope\bge-small-zh-v1.5'
 base_embed_model_name = os.path.basename(model_name_or_path)
 embed_model = FlagAutoModel.from_finetuned(
     model_name_or_path,
@@ -58,8 +55,8 @@ embed_tokenizer_dict[base_embed_model_name] = tokenized
 
 # 初始化rerank
 rerank_model_dict, rerank_tokenizer_dict = {}, {}
-# model_name_or_path = r'/models/AI-ModelScope/bge-reranker-v2-m3'
-model_name_or_path = os.environ.get("RERANKER_PATH", "")
+# model_name_or_path = os.environ.get("RERANKER_PATH", "")
+model_name_or_path = r'F:\inspur\EMBEDDING_MODEL\BAAI\bge-reranker-base'
 if model_name_or_path == "":
     logger.info("Please set the environment variable 'RERANKER_PATH'")
 
@@ -78,18 +75,17 @@ rerank_tokenizer_dict[base_rerank_model_name] = tokenizer
 
 
 class RerankRequestModel(BaseModel):
-    model: str = Field("bge-reranker-v2-m3")
-    # model_path: str = Field("./bge-reranker-v2-m3")
+    model: str = Field(base_rerank_model_name)
     query: str = Field("")
     documents: List = Field([""])
     normalize: bool = Field(True)
     cutoff_layers: int = Field(28)
-    top_n: int = Field(3)
+    top_n: int = Field(default=0)
     return_documents: bool = Field(True)
     return_len: bool = Field(True)
 
 class AddRerankRequestModel(BaseModel):
-    model_path: str = Field("./bge-reranker-v2-m3")
+    model_path: str = Field("")
     model_name: str = Field("")
     model_type: str = Field(default="rerank")  # "rerank"
 
@@ -98,7 +94,7 @@ class DelRerankRequestModel(BaseModel):
 
 
 class EmbeddingRequestModel(BaseModel):
-    model: str = Field("")
+    model: str = Field(base_embed_model_name)
     input: List = Field([""])
 
 

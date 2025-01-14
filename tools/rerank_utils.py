@@ -31,7 +31,7 @@ def rerank_infer(req: RerankRequestModel, rerank_model_dict=None):
 
 
         sorted_indices = sorted(range(len(scores)), key=lambda k: scores[k], reverse=True)
-        if len(corpus) > req.top_n:
+        if req.top_n != 0 and len(corpus) > req.top_n:
             sorted_indices = sorted_indices[:req.top_n]
 
         data = []
